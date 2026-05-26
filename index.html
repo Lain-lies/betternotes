@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="index.js" defer></script>
 		<title>BetterNotes</title>
-	
 	</head>
 	<body>
 		<h1>BetterNotes(beta)</h1>
@@ -18,7 +17,8 @@
 			<h3>Current Session:</h3>
 			<p id="currentSessionName"></p>
 
-			<h2>Records in this session:</h2> <span id="recordCount"></span>
+			<h2>Records in this session:</h2>
+			<span id="recordCount"></span>
 
 			<form id="createSessionForm">
 				<label for="sessionName">
@@ -35,7 +35,7 @@
 			</form>
 		</div>
 
-		<button id = "hide-control-panel">HIDE CONTROL PANEL</button>
+		<button id="hide-control-panel">HIDE CONTROL PANEL</button>
 		<h3>New Note:</h3>
 
 		<form id="ticketForm">
@@ -237,14 +237,20 @@
 			<br /><br />
 
 			<button type="submit">Save Ticket</button>
-			<button style = "margin-left: 15rem;" type="reset" id="newNoteButton">New Note</button>
+			<button type="button" id="cancelButton">Cancel</button>
+			<button type="button" style="margin-left: 15rem" id="newNoteButton">
+				New Note
+			</button>
 		</form>
-		
-		<hr/>	
+
+		<hr />
 		<footer>
-			<p>BetterNotes &copy; 2026 | GitHub: <a href="https://github.com/Lain-lies/betterNotes" target="_blank">BetterNotes</a></p>
+			<p>
+				BetterNotes &copy; 2026 | GitHub:
+				<a href="https://github.com/Lain-lies/betterNotes" target="_blank"
+					>BetterNotes</a
+				>
+			</p>
 		</footer>
 	</body>
-
-
 </html>

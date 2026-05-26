@@ -1,4 +1,3 @@
-
 const localState = {
 	record: [],
 	currentlyEditingRecordIndex: null,
@@ -15,14 +14,13 @@ const localState = {
 			this.record.push(newTicket);
 			return;
 		}
-		
+
 		this.record[this.currentlyEditingRecordIndex] = newTicket;
 		copyToClipboard(noteTransform(newTicket));
 		alert("Record Saved!");
 	},
 
 	updateCurrentSession: function (sessionName) {
-		
 		this.currentSession = sessionName;
 		this.currentSessionNodeElement.textContent = sessionName;
 		this.record = JSON.parse(localStorage.getItem(sessionName));
@@ -32,20 +30,28 @@ const localState = {
 	},
 
 	syncWithLocalStorage: function () {
+		// if new note is triggered but the current record is not yet saved, prevent
 
-		// if new note is triggered but the current record is not yet saved, prevent 	
-	
-		if(this.currentlyEditingRecordIndex + 1 > this.record.length) {
+		console.log(
+			this.currentlyEditingRecordIndex,
+			this.record.length,
+			this.ticketModified,
+		);
+		if (
+			this.currentlyEditingRecordIndex === this.record.length &&
+			this.ticketModified
+		) {
 			alert("Please save current record Or cancel it first.");
-			
-			return;
+			return false;
 		}
 
-
 		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
-		this.currentRecordIndex = this.record.length;
-		
+		this.currentlyEditingRecordIndex = this.record.length;
+		this.ticketModified = false;
+
 		alert("Local Storage Synced!");
+
+		return true;
 	},
 };
 
@@ -109,7 +115,6 @@ function loadSession(sessionName) {
 }
 
 function drawSessionList(sessionList) {
-
 	const sessionListNodeElement = document.querySelector(".session-list");
 
 	sessionListNodeElement.replaceChildren();
@@ -120,7 +125,6 @@ function drawSessionList(sessionList) {
 		button.addEventListener("click", () => {
 			localState.syncWithLocalStorage();
 			localState.updateCurrentSession(session);
-			
 		});
 		li.appendChild(button);
 		sessionListNodeElement.appendChild(li);
@@ -175,19 +179,30 @@ function initTicketForm() {
 		console.log(data);
 	});
 
+	const cancelButton = document.querySelector("#cancelButton");
+	cancelButton.addEventListener("click", () => {
+		if (
+			confirm(
+				"Are you sure you want to cancel? All unsaved changes will be lost.",
+			)
+		) {
+			ticketForm.reset();
+			localState.ticketModified = false;
+		}
+	});
+
 	const newNoteButton = document.querySelector("#newNoteButton");
 	newNoteButton.addEventListener("click", () => {
-		ticketForm.reset();
-		localState.syncWithLocalStorage();
+		if (localState.syncWithLocalStorage()) {
+			ticketForm.reset();
+		}
 	});
 }
 
 function initSession() {
-	
 	const sessionList = Object.entries(localStorage).map(([key]) => key);
 
-	if(sessionList.length === 0) {
-
+	if (sessionList.length === 0) {
 		const now = Date.now();
 		const dateObject = new Date(now);
 		const currentDate = dateObject.toLocaleDateString();
@@ -207,7 +222,7 @@ function initCreateNewSessionForm() {
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		const newSessionName = formData.get("sessionName").trim();
-		console.log(newSessionName);	
+		console.log(newSessionName);
 		if (newSessionName === "") {
 			alert("Session name cannot be empty!");
 			return;
@@ -221,9 +236,8 @@ function initCreateNewSessionForm() {
 		localStorage.setItem(newSessionName, JSON.stringify([]));
 
 		//RE-INITIALIZE THE SESSION LIST
-		
-		initSession();
 
+		initSession();
 	});
 }
 
@@ -233,12 +247,10 @@ function init() {
 		localState.syncWithLocalStorage();
 	});
 
-	localStorage.clear();
 	initSession();
 	initControlPanel();
-	initCreateNewSessionForm();	
+	initCreateNewSessionForm();
 	initTicketForm();
-
 }
 
 init();
