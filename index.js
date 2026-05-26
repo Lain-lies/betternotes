@@ -1,38 +1,15 @@
-const localState = {
-	record: [],
-	updateTickets: function (newTicket) {
-		this.record = this.records.push(newTicket);
-	},
-	syncWithLocalStorage: function () {
-		localStorage.setItem("record", JSON.stringify(this.record));
-	},
-};
+async function copyToClipboard(text) {
+	try {
+		await navigator.clipboard.writeText(text);
+		alert("Text successfully copied!");
+	} catch (err) {
+		console.error("Failed to copy: ", err);
+	}
+}
 
-const ticketForm = document.querySelector("#ticketForm");
-
-ticketForm.addEventListener("submit", (event) => {
-	event.preventDefault();
-	const formData = new FormData(event.target);
-	const data = Object.fromEntries(formData.entries());
-
-	const checkList = [
-		"workSetup",
-		"criticalIssue",
-		"existingTicket",
-		"sspr",
-		"nexthink",
-		"nonAdPasswordReset",
-		"ticketStatus",
-		"issueResolved",
-		"userAgreedResolved",
-	];
-
-	checkList.forEach((item) => {
-		!Object.hasOwn(data, item) && (data[item] = "No");
-	});
-
-	console.log(data);
-	const notes = `Employee ID: ${data.employeeId}
+function noteTransform(data) {
+	const notes = `
+Employee ID: ${data.employeeId}
 Name: ${data.fullName}
 User ID: ${data.userId}
 Email Address: ${data.email}
@@ -63,14 +40,99 @@ User agreed to set data to Resolved? ${data.userAgreedResolved}
 
 Ticket #: ${data.ticketNumber}`;
 
-	copyToClipboard(notes);
-});
-
-async function copyToClipboard(text) {
-	try {
-		await navigator.clipboard.writeText(text);
-		alert("Text successfully copied!");
-	} catch (err) {
-		console.error("Failed to copy: ", err);
-	}
+	return notes;
 }
+
+const localState = {
+	record: [],
+	currentRecordIndex: 0,
+	currentSession: "test",
+	currentSessionNodeElement: document.querySelector("#currentSessionName"),
+
+	saveRecord: function (newTicket) {
+		if (this.currentRecordIndex === this.record.length) {
+			this.record.push(newTicket);
+			return;
+		}
+		this.record[this.currentRecordIndex] = newTicket;
+		copyToClipboard(noteTransform(newTicket));
+		alert("Record Saved!");
+	},
+
+	updateCurrentSession: function (newSessionName) {
+		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
+		this.currentSession = newSessionName;
+		this.currentSessionNodeElement.textContent = newSessionName;
+		this.record = JSON.parse(localStorage.getItem(newSessionName)) || [];
+		console.log(this.currentSession);
+	},
+
+	syncWithLocalStorage: function () {
+		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
+		this.currentRecordIndex = this.record.length;
+		alert("Local Storage Synced!");
+	},
+};
+
+function init() {
+	localState.currentSessionNodeElement.textContent = localState.currentSession;
+	const hideControlPanelButton = document.querySelector("#hide-control-panel");
+	const controlPanel = document.querySelector(".control-panel");
+	hideControlPanelButton.addEventListener("click", () => {
+		if (controlPanel.style.display === "none") {
+			controlPanel.style.display = "block";
+			hideControlPanelButton.textContent = "HIDE CONTROL PANEL";
+		} else {
+			controlPanel.style.display = "none";
+			hideControlPanelButton.textContent = "SHOW CONTROL PANEL";
+		}
+	});
+
+	const sessions = Object.entries(localStorage).map(([key]) => key);
+	const sessionListNodeElement = document.querySelector(".session-list");
+	console.log(sessions);
+	sessions.forEach((session) => {
+		const li = document.createElement("li");
+		const a = document.createElement("a");
+		a.textContent = session;
+		a.addEventListener("click", () => {
+			localState.updateCurrentSession(session);
+		});
+		li.appendChild(a);
+		sessionListNodeElement.appendChild(li);
+	});
+
+	const ticketForm = document.querySelector("#ticketForm");
+	ticketForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		const data = Object.fromEntries(formData.entries());
+
+		const checkList = [
+			"workSetup",
+			"criticalIssue",
+			"existingTicket",
+			"sspr",
+			"nexthink",
+			"nonAdPasswordReset",
+			"ticketStatus",
+			"issueResolved",
+			"userAgreedResolved",
+		];
+
+		checkList.forEach((item) => {
+			!Object.hasOwn(data, item) && (data[item] = "No");
+		});
+
+		localState.saveRecord(data);
+		console.log(data);
+	});
+
+	const newNoteButton = document.querySelector("#newNoteButton");
+	newNoteButton.addEventListener("click", () => {
+		ticketForm.reset();
+		localState.syncWithLocalStorage();
+	});
+}
+
+init();
