@@ -75,6 +75,10 @@ const localState = {
 };
 
 function init() {
+	window.addEventListener("beforeunload", (e) => {
+		e.preventDefault();
+		localState.syncWithLocalStorage();
+	});
 	localState.currentSessionNodeElement.textContent = localState.currentSession;
 	const hideControlPanelButton = document.querySelector("#hide-control-panel");
 	const controlPanel = document.querySelector(".control-panel");
