@@ -6,7 +6,7 @@
 		<script src="index.js" defer></script>
 		<title>BetterNotes</title>
 	
-	</head
+	</head>
 	<body>
 		<h1>BetterNotes(beta)</h1>
 		<p>ver. 0.8.0</p>
@@ -18,7 +18,9 @@
 			<h3>Current Session:</h3>
 			<p id="currentSessionName"></p>
 
-			<form">
+			<h2>Records in this session:</h2> <span id="recordCount"></span>
+
+			<form id="createSessionForm">
 				<label for="sessionName">
 					Create New Session :
 					<input
@@ -28,6 +30,8 @@
 						placeholder="Enter session name"
 						required />
 				</label>
+
+				<button type="submit">Create Session</button>
 			</form>
 		</div>
 

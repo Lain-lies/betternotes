@@ -1,3 +1,54 @@
+
+const localState = {
+	record: [],
+	currentlyEditingRecordIndex: null,
+	currentSession: "",
+	currentSessionNodeElement: document.querySelector("#currentSessionName"),
+	ticketModified: false,
+
+	initLocalState: function () {
+		this.currentlyEditingRecordIndex = this.record.length;
+	},
+
+	saveRecord: function (newTicket) {
+		if (this.currentlyEditingRecordIndex === this.record.length) {
+			this.record.push(newTicket);
+			return;
+		}
+		
+		this.record[this.currentlyEditingRecordIndex] = newTicket;
+		copyToClipboard(noteTransform(newTicket));
+		alert("Record Saved!");
+	},
+
+	updateCurrentSession: function (sessionName) {
+		
+		this.currentSession = sessionName;
+		this.currentSessionNodeElement.textContent = sessionName;
+		this.record = JSON.parse(localStorage.getItem(sessionName));
+		this.currentlyEditingRecordIndex = this.record.length;
+
+		console.log(this.currentSession);
+	},
+
+	syncWithLocalStorage: function () {
+
+		// if new note is triggered but the current record is not yet saved, prevent 	
+	
+		if(this.currentlyEditingRecordIndex + 1 > this.record.length) {
+			alert("Please save current record Or cancel it first.");
+			
+			return;
+		}
+
+
+		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
+		this.currentRecordIndex = this.record.length;
+		
+		alert("Local Storage Synced!");
+	},
+};
+
 async function copyToClipboard(text) {
 	try {
 		await navigator.clipboard.writeText(text);
@@ -43,36 +94,40 @@ Ticket #: ${data.ticketNumber}`;
 	return notes;
 }
 
-const localState = {
-	record: [],
-	currentlyEditingRecordIndex: 0,
-	currentSession: "test",
-	currentSessionNodeElement: document.querySelector("#currentSessionName"),
+function loadSession(sessionName) {
+	const sessionData = JSON.parse(localStorage.getItem(sessionName));
 
-	saveRecord: function (newTicket) {
-		if (this.currentRecordIndex === this.record.length) {
-			this.record.push(newTicket);
-			return;
-		}
-		this.record[this.currentRecordIndex] = newTicket;
-		copyToClipboard(noteTransform(newTicket));
-		alert("Record Saved!");
-	},
+	if (Array.isArray(sessionData)) {
+		localState.record = sessionData;
+		localState.currentlyEditingRecordIndex = localState.record.length;
+		localState.currentSession = sessionName;
+		localState.currentSessionNodeElement.textContent = sessionName;
+	} else {
+		alert("Session not found! Please create a new session.");
+	}
+	console.log(sessionData);
+}
 
-	updateCurrentSession: function (newSessionName) {
-		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
-		this.currentSession = newSessionName;
-		this.currentSessionNodeElement.textContent = newSessionName;
-		this.record = JSON.parse(localStorage.getItem(newSessionName)) || [];
-		console.log(this.currentSession);
-	},
+function drawSessionList(sessionList) {
 
-	syncWithLocalStorage: function () {
-		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
-		this.currentRecordIndex = this.record.length;
-		alert("Local Storage Synced!");
-	},
-};
+	const sessionListNodeElement = document.querySelector(".session-list");
+
+	sessionListNodeElement.replaceChildren();
+	sessionList.forEach((session) => {
+		const li = document.createElement("li");
+		const button = document.createElement("button");
+		button.textContent = session;
+		button.addEventListener("click", () => {
+			localState.syncWithLocalStorage();
+			localState.updateCurrentSession(session);
+			
+		});
+		li.appendChild(button);
+		sessionListNodeElement.appendChild(li);
+	});
+
+	localState.currentSessionNodeElement.textContent = localState.currentSession;
+}
 
 function initControlPanel() {
 	const hideControlPanelButton = document.querySelector("#hide-control-panel");
@@ -90,6 +145,11 @@ function initControlPanel() {
 
 function initTicketForm() {
 	const ticketForm = document.querySelector("#ticketForm");
+
+	ticketForm.addEventListener("input", () => {
+		localState.ticketModified = true;
+	});
+
 	ticketForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		const formData = new FormData(event.target);
@@ -123,35 +183,48 @@ function initTicketForm() {
 }
 
 function initSession() {
-	const sessions = Object.entries(localStorage).map(([key]) => key);
-	loadSession(sessions[0]);
-	const sessionListNodeElement = document.querySelector(".session-list");
-	sessions.forEach((session) => {
-		const li = document.createElement("li");
-		const a = document.createElement("a");
-		a.textContent = session;
-		a.addEventListener("click", () => {
-			localState.updateCurrentSession(session);
-		});
-		li.appendChild(a);
-		sessionListNodeElement.appendChild(li);
-	});
-	console.log(sessions);
-}
+	
+	const sessionList = Object.entries(localStorage).map(([key]) => key);
 
-function loadSession(sessionName) {
-	console.log(sessionName);
-	const sessionData = localStorage.getItem(sessionName);
-	if (sessionData) {
-		localState.record = JSON.parse(sessionData);
-		localState.currentRecordIndex = localState.record.length;
-		localState.currentSession = sessionName;
-		localState.currentSessionNodeElement.textContent = sessionName;
-	} else {
-		alert("Session not found!");
+	if(sessionList.length === 0) {
+
+		const now = Date.now();
+		const dateObject = new Date(now);
+		const currentDate = dateObject.toLocaleDateString();
+		localStorage.setItem(currentDate, JSON.stringify([]));
+		sessionList.push(currentDate);
 	}
 
-	console.log(sessionData);
+	loadSession(sessionList[0]);
+	drawSessionList(sessionList);
+
+	console.log(sessionList);
+}
+
+function initCreateNewSessionForm() {
+	const createSessionForm = document.querySelector("#createSessionForm");
+	createSessionForm.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		const newSessionName = formData.get("sessionName").trim();
+		console.log(newSessionName);	
+		if (newSessionName === "") {
+			alert("Session name cannot be empty!");
+			return;
+		}
+
+		if (localStorage.getItem(newSessionName)) {
+			alert("Session name already exists! Please choose a different name.");
+			return;
+		}
+
+		localStorage.setItem(newSessionName, JSON.stringify([]));
+
+		//RE-INITIALIZE THE SESSION LIST
+		
+		initSession();
+
+	});
 }
 
 function init() {
@@ -160,10 +233,12 @@ function init() {
 		localState.syncWithLocalStorage();
 	});
 
-	localState.currentSessionNodeElement.textContent = localState.currentSession;
+	localStorage.clear();
 	initSession();
 	initControlPanel();
+	initCreateNewSessionForm();	
 	initTicketForm();
+
 }
 
 init();
