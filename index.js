@@ -45,7 +45,7 @@ Ticket #: ${data.ticketNumber}`;
 
 const localState = {
 	record: [],
-	currentRecordIndex: 0,
+	currentlyEditingRecordIndex: 0,
 	currentSession: "test",
 	currentSessionNodeElement: document.querySelector("#currentSessionName"),
 
@@ -74,12 +74,7 @@ const localState = {
 	},
 };
 
-function init() {
-	window.addEventListener("beforeunload", (e) => {
-		e.preventDefault();
-		localState.syncWithLocalStorage();
-	});
-	localState.currentSessionNodeElement.textContent = localState.currentSession;
+function initControlPanel() {
 	const hideControlPanelButton = document.querySelector("#hide-control-panel");
 	const controlPanel = document.querySelector(".control-panel");
 	hideControlPanelButton.addEventListener("click", () => {
@@ -91,21 +86,9 @@ function init() {
 			hideControlPanelButton.textContent = "SHOW CONTROL PANEL";
 		}
 	});
+}
 
-	const sessions = Object.entries(localStorage).map(([key]) => key);
-	const sessionListNodeElement = document.querySelector(".session-list");
-	console.log(sessions);
-	sessions.forEach((session) => {
-		const li = document.createElement("li");
-		const a = document.createElement("a");
-		a.textContent = session;
-		a.addEventListener("click", () => {
-			localState.updateCurrentSession(session);
-		});
-		li.appendChild(a);
-		sessionListNodeElement.appendChild(li);
-	});
-
+function initTicketForm() {
 	const ticketForm = document.querySelector("#ticketForm");
 	ticketForm.addEventListener("submit", (event) => {
 		event.preventDefault();
@@ -137,6 +120,50 @@ function init() {
 		ticketForm.reset();
 		localState.syncWithLocalStorage();
 	});
+}
+
+function initSession() {
+	const sessions = Object.entries(localStorage).map(([key]) => key);
+	loadSession(sessions[0]);
+	const sessionListNodeElement = document.querySelector(".session-list");
+	sessions.forEach((session) => {
+		const li = document.createElement("li");
+		const a = document.createElement("a");
+		a.textContent = session;
+		a.addEventListener("click", () => {
+			localState.updateCurrentSession(session);
+		});
+		li.appendChild(a);
+		sessionListNodeElement.appendChild(li);
+	});
+	console.log(sessions);
+}
+
+function loadSession(sessionName) {
+	console.log(sessionName);
+	const sessionData = localStorage.getItem(sessionName);
+	if (sessionData) {
+		localState.record = JSON.parse(sessionData);
+		localState.currentRecordIndex = localState.record.length;
+		localState.currentSession = sessionName;
+		localState.currentSessionNodeElement.textContent = sessionName;
+	} else {
+		alert("Session not found!");
+	}
+
+	console.log(sessionData);
+}
+
+function init() {
+	window.addEventListener("beforeunload", (e) => {
+		e.preventDefault();
+		localState.syncWithLocalStorage();
+	});
+
+	localState.currentSessionNodeElement.textContent = localState.currentSession;
+	initSession();
+	initControlPanel();
+	initTicketForm();
 }
 
 init();
