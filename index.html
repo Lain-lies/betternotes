@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="index.js" defer></script>
+		<title>BetterNotes</title>
+	</head>
+	<body>
+		<h3>BetterNotes</h3>
+
+		<form id="ticketForm">
+			<label>
+				Employee ID:
+				<input
+					type="text"
+					name="employeeId"
+					placeholder="Enter Employee ID"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				First and Last Name:
+				<input
+					type="text"
+					name="fullName"
+					placeholder="Enter Full Name"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				User ID:
+				<input type="text" name="userId" placeholder="Enter User ID" required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Email Address:
+				<input
+					type="email"
+					name="email"
+					placeholder="Enter Email Address"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Contact Number:
+				<input
+					type="text"
+					name="contactNumber"
+					placeholder="Enter Contact Number"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Best Time to Reach:
+				<input
+					type="text"
+					name="bestTimeToReach"
+					placeholder="Enter Best Time to Reach"
+					value="8am-5pm"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				WFH?:
+				<input type="checkbox" name="workSetup" value="WFH" />
+			</label>
+
+			<br /><br />
+			<label>
+				Location:
+				<input
+					type="text"
+					name="location"
+					placeholder="Enter Location"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Critical Issue?
+				<input type="checkbox" name="criticalIssue" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Existing Ticket?
+				<input type="checkbox" name="existingTicket" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Existing Ticket Number:
+				<input
+					type="text"
+					name="existingTicketNumber"
+					placeholder="Enter Ticket Number"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				SSPR?
+				<input type="checkbox" name="sspr" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Nexthink?
+				<input type="checkbox" name="nexthink" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Non-AD Password Reset via Chat?
+				<input type="checkbox" name="nonAdPasswordReset" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Issue Description:
+				<textarea
+					name="issueDescription"
+					rows="5"
+					cols="50"
+					placeholder="Describe the issue"
+					required></textarea>
+			</label>
+
+			<br /><br />
+
+			<label>
+				Minimum Data Set:
+				<textarea
+					name="minimumDataSet"
+					rows="5"
+					cols="50"
+					placeholder="Enter minimum data set"
+					required></textarea>
+			</label>
+
+			<br /><br />
+
+			<label>
+				KB Article:
+				<input
+					type="text"
+					name="kbArticle"
+					placeholder="Enter KB Article"
+					required />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Next Action(s):
+				<textarea
+					name="nextActions"
+					rows="4"
+					cols="50"
+					placeholder="Enter next actions"
+					required></textarea>
+			</label>
+
+			<br /><br />
+
+			<label>
+				Issue Resolved?
+				<input type="checkbox" name="issueResolved" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				User agreed to set ticket to Resolved?
+				<input type="checkbox" name="userAgreedResolved" value="Yes" />
+			</label>
+
+			<br /><br />
+
+			<label>
+				Ticket Number:
+				<input
+					type="text"
+					name="ticketNumber"
+					placeholder="Enter Ticket Number"
+					required />
+			</label>
+			<br /><br />
+
+			<button type="submit">Save Ticket</button>
+		</form>
+	</body>
+</html>
