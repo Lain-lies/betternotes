@@ -76,8 +76,8 @@ Work Setup: ${data.workSetup}
 Location: ${data.location}
 
 Critical Issue? ${data.criticalIssue}
-Existing Ticket? ${data.existingdata}
-Existing Ticket Number: ${data.existingdataNumber}
+Existing Ticket? ${data.existingTicket}
+Existing Ticket Number: ${data.existingTicketNumber}
 
 SSPR? ${data.sspr}
 Nexthink? ${data.nexthink}
