@@ -131,6 +131,23 @@ function drawSessionList(sessionList) {
 	});
 
 	localState.currentSessionNodeElement.textContent = localState.currentSession;
+
+	//temporary code for downloading the session records
+	const sessionExportListNodeElement = document.querySelector(
+		".session-export-list",
+	);
+	sessionExportListNodeElement.replaceChildren();
+
+	sessionList.forEach((session) => {
+		const li = document.createElement("li");
+		const button = document.createElement("button");
+		button.textContent = session;
+		button.addEventListener("click", () => {
+			exportSession(session);
+		});
+		li.appendChild(button);
+		sessionExportListNodeElement.appendChild(li);
+	});
 }
 
 function initControlPanel() {
@@ -251,6 +268,68 @@ function init() {
 	initControlPanel();
 	initCreateNewSessionForm();
 	initTicketForm();
+}
+
+function exportSession(sessionName) {
+	const records = JSON.parse(localStorage.getItem(sessionName)) || [];
+
+	let textContent = "";
+
+	records.forEach((ticket, index) => {
+		textContent += `
+========================================
+Record #${index + 1}
+========================================
+
+Employee ID: ${ticket.employeeId}
+Name: ${ticket.fullName}
+User ID: ${ticket.userId}
+Email Address: ${ticket.email}
+Contact Number: ${ticket.contactNumber}
+Best time to reach: ${ticket.bestTimeToReach}
+Work Setup: ${ticket.workSetup}
+Location: ${ticket.location}
+
+Critical Issue? ${ticket.criticalIssue}
+Existing Ticket? ${ticket.existingTicket}
+Existing Ticket Number: ${ticket.existingTicketNumber}
+
+SSPR? ${ticket.sspr}
+Nexthink? ${ticket.nexthink}
+Non-AD Password Reset via Chat? ${ticket.nonAdPasswordReset}
+
+ISSUE DESCRIPTION:
+${ticket.issueDescription}
+
+MINIMUM DATA SET:
+${ticket.minimumDataSet}
+
+KB Article: ${ticket.kbArticle}
+Next Action(s): ${ticket.nextActions}
+
+Issue Resolved? ${ticket.issueResolved}
+User agreed to set ticket to Resolved?
+${ticket.userAgreedResolved}
+
+Ticket #: ${ticket.ticketNumber}
+
+
+`;
+	});
+
+	const blob = new Blob([textContent], {
+		type: "text/plain",
+	});
+
+	const url = URL.createObjectURL(blob);
+
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `${sessionName}.txt`;
+
+	a.click();
+
+	URL.revokeObjectURL(url);
 }
 
 init();

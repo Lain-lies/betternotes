@@ -4,20 +4,95 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="index.js" defer></script>
-		<title>BetterNotes</title>
+		<title>BetterNotes | by: Lain</title>
+		<style>
+			* {
+				box-sizing: border-box;
+				font-family: sans-serif;
+			}
+			input,
+			textarea {
+				display: block;
+				font-size: 1rem;
+				margin-bottom: 1rem;
+			}
+
+			textarea {
+				width: 100%;
+			}
+
+			input[type="checkbox"] {
+				width: 20px;
+				height: 20px;
+				margin-right: 0.5rem;
+				vertical-align: middle;
+			}
+
+			input[type="checkbox"]:hover {
+				cursor: pointer;
+				filter: brightness(1.2);
+			}
+
+			header {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 1rem;
+			}
+
+			h1 {
+				display: inline-block;
+			}
+
+			.logo {
+				display: inline-block;
+				width: 60px;
+			}
+
+			img {
+				overflow: hidden;
+				width: 100%;
+				border-radius: 50%;
+			}
+
+			button {
+				display: block;
+				margin-bottom: 1rem;
+			}
+			button:hover {
+				cursor: pointer;
+				filter: brightness(1.2);
+			}
+			#saveTicketButton {
+				padding: 1rem;
+			}
+
+			.control-panel {
+				border: 1px solid #000;
+				padding: 1rem;
+				margin-bottom: 1rem;
+			}
+		</style>
 	</head>
 	<body>
-		<h1>BetterNotes(beta)</h1>
-		<p>ver. 0.9.0</p>
+		<header>
+			<h1>BetterNotes</h1>
+			<div class="logo">
+				<img
+					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwi1tt9wRKB9WFZV2JVO_y9kU_Db9Sb5atdw&s"
+					alt="BetterNotes Logo" />
+			</div>
+		</header>
+		<p>ver. 1.0.0</p>
 
 		<div class="control-panel">
-			<p><b>Sessions:</b></p>
+			<h3><b>Sessions:</b></h3>
 			<ul class="session-list"></ul>
 
 			<h3>Current Session:</h3>
 			<p id="currentSessionName"></p>
 
-			<h2>Records in this session:</h2>
+			<h4>Records in this session:</h4>
 			<span id="recordCount"></span>
 
 			<form id="createSessionForm">
@@ -33,6 +108,9 @@
 
 				<button type="submit">Create Session</button>
 			</form>
+
+			<h3>Session Records: Export</h3>
+			<ul class="session-export-list"></ul>
 		</div>
 
 		<button id="hide-control-panel">HIDE CONTROL PANEL</button>
@@ -48,8 +126,6 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				First and Last Name:
 				<input
@@ -59,14 +135,10 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				User ID:
 				<input type="text" name="userId" placeholder="Enter User ID" required />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Email Address:
@@ -77,8 +149,6 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				Contact Number:
 				<input
@@ -87,8 +157,6 @@
 					placeholder="Enter Contact Number"
 					required />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Best Time to Reach:
@@ -100,14 +168,11 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				WFH?:
 				<input type="checkbox" name="workSetup" value="WFH" />
 			</label>
 
-			<br /><br />
 			<label>
 				Location:
 				<input
@@ -117,21 +182,15 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				Critical Issue?
 				<input type="checkbox" name="criticalIssue" value="Yes" />
 			</label>
 
-			<br /><br />
-
 			<label>
 				Existing Ticket?
 				<input type="checkbox" name="existingTicket" value="Yes" />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Existing Ticket Number:
@@ -142,28 +201,20 @@
 					required />
 			</label>
 
-			<br /><br />
-
 			<label>
 				SSPR?
 				<input type="checkbox" name="sspr" value="Yes" />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Nexthink?
 				<input type="checkbox" name="nexthink" value="Yes" />
 			</label>
 
-			<br /><br />
-
 			<label>
 				Non-AD Password Reset via Chat?
 				<input type="checkbox" name="nonAdPasswordReset" value="Yes" />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Issue Description:
@@ -175,8 +226,6 @@
 					required></textarea>
 			</label>
 
-			<br /><br />
-
 			<label>
 				Minimum Data Set:
 				<textarea
@@ -187,8 +236,6 @@
 					required></textarea>
 			</label>
 
-			<br /><br />
-
 			<label>
 				KB Article:
 				<input
@@ -197,8 +244,6 @@
 					placeholder="Enter KB Article"
 					required />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Next Action(s):
@@ -210,21 +255,15 @@
 					required></textarea>
 			</label>
 
-			<br /><br />
-
 			<label>
 				Issue Resolved?
 				<input type="checkbox" name="issueResolved" value="Yes" />
 			</label>
 
-			<br /><br />
-
 			<label>
 				User agreed to set ticket to Resolved?
 				<input type="checkbox" name="userAgreedResolved" value="Yes" />
 			</label>
-
-			<br /><br />
 
 			<label>
 				Ticket Number:
@@ -234,13 +273,10 @@
 					placeholder="Enter Ticket Number"
 					required />
 			</label>
-			<br /><br />
 
-			<button type="submit">Save Ticket</button>
+			<button type="submit" id="saveTicketButton">Save Ticket</button>
 			<button type="button" id="cancelButton">Cancel</button>
-			<button type="button" style="margin-left: 15rem" id="newNoteButton">
-				New Note
-			</button>
+			<button type="button" id="newNoteButton">New Note</button>
 		</form>
 
 		<hr />
