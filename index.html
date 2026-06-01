@@ -59,10 +59,12 @@
 				display: block;
 				margin-bottom: 1rem;
 			}
+
 			button:hover {
 				cursor: pointer;
 				filter: brightness(1.2);
 			}
+
 			#saveTicketButton {
 				padding: 1rem;
 			}
@@ -71,6 +73,12 @@
 				border: 1px solid #000;
 				padding: 1rem;
 				margin-bottom: 1rem;
+			}
+
+			.switch-click {
+				margin-top: 0.5rem;
+				font-size: 1rem;
+				padding: 0.5rem 1rem;
 			}
 		</style>
 	</head>
@@ -83,7 +91,7 @@
 					alt="BetterNotes Logo" />
 			</div>
 		</header>
-		<p>ver. 1.0.1</p>
+		<p>ver. 1.1.2</p>
 
 		<div class="control-panel">
 			<h3><b>Sessions:</b></h3>
@@ -170,7 +178,7 @@
 
 			<label>
 				WFH?:
-				<input type="checkbox" name="workSetup" value="WFH" />
+				<input type="input" name="workSetup" value="WFH" />
 			</label>
 
 			<label>
@@ -181,15 +189,16 @@
 					placeholder="Enter Location"
 					required />
 			</label>
-
+			<hr />
+			<hr />
 			<label>
 				Critical Issue?
-				<input type="checkbox" name="criticalIssue" value="Yes" />
+				<input type="input" name="criticalIssue" />
 			</label>
 
 			<label>
 				Existing Ticket?
-				<input type="checkbox" name="existingTicket" value="Yes" />
+				<input type="input" name="existingTicket" />
 			</label>
 
 			<label>
@@ -198,24 +207,64 @@
 					type="text"
 					name="existingTicketNumber"
 					placeholder="Enter Ticket Number"
+					default="N/A"
+					value="N/A"
 					required />
 			</label>
 
 			<label>
 				SSPR?
-				<input type="checkbox" name="sspr" value="Yes" />
+				<input type="input" name="sspr" />
 			</label>
 
 			<label>
 				Nexthink?
-				<input type="checkbox" name="nexthink" value="Yes" />
+				<input type="input" name="nexthink" />
 			</label>
 
 			<label>
 				Non-AD Password Reset via Chat?
-				<input type="checkbox" name="nonAdPasswordReset" value="Yes" />
+				<input type="input" name="nonAdPasswordReset" />
+			</label>
+			<hr />
+			<hr />
+			<label>
+				New Hire:
+				<input type="input" name="newHire" />
 			</label>
 
+			<label>
+				MFA Registered:
+				<input type="input" name="mfaRegistered" />
+			</label>
+
+			<label>
+				SSPR Offered?:
+				<input type="input" name="ssprOffered" />
+			</label>
+
+			<label>
+				User declined:
+				<input type="input" name="userDeclined" />
+			</label>
+
+			<label>
+				User declined:
+				<textarea name="userDeclinedReason">N/A</textarea>
+			</label>
+
+			<label>
+				User attempted SSPR but failed:
+				<input type="input" name="userAttemptedSsprFailed" />
+			</label>
+
+			<label>
+				Failure Details:
+				<textarea name="ssprFailureDetails">N/A</textarea>
+			</label>
+
+			<hr />
+			<hr />
 			<label>
 				Issue Description:
 				<textarea
@@ -235,7 +284,8 @@
 					placeholder="Enter minimum data set"
 					required></textarea>
 			</label>
-
+			<hr />
+			<hr />
 			<label>
 				KB Article:
 				<input
@@ -257,12 +307,12 @@
 
 			<label>
 				Issue Resolved?
-				<input type="checkbox" name="issueResolved" value="Yes" />
+				<input type="input" name="issueResolved" />
 			</label>
 
 			<label>
 				User agreed to set ticket to Resolved?
-				<input type="checkbox" name="userAgreedResolved" value="Yes" />
+				<input type="iput" name="userAgreedResolved" />
 			</label>
 
 			<label>
@@ -271,6 +321,17 @@
 					type="text"
 					name="ticketNumber"
 					placeholder="Enter Ticket Number"
+					value="N/A"
+					required />
+			</label>
+
+			<label>
+				Resolution Notes:
+				<input
+					type="text"
+					name="resolutionNotes"
+					placeholder="Enter Resolution Notes"
+					value="N/A"
 					required />
 			</label>
 

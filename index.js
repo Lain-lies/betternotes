@@ -79,6 +79,10 @@ const localState = {
 
 	syncWithLocalStorage: function () {
 		// if new note is triggered but the current record is not yet saved, prevent
+		if (this.getFieldSaved() === false && this.getFieldModified() === false) {
+			alert("No changes detected! Please modify the form before saving.");
+			return false;
+		}
 
 		if (this.getFieldSaved() === false && this.getFieldModified() === true) {
 			alert("Please save current record Or cancel it first.");
@@ -128,6 +132,15 @@ SSPR? ${data.sspr}
 Nexthink? ${data.nexthink}
 Non-AD Password Reset via Chat? ${data.nonAdPasswordReset}
 
+New Hire: ${data.newHire}
+MFA Registered? ${data.mfaRegistered}
+SSPR Offered? ${data.ssprOffered}
+
+User Declined SSPR? ${data.userDeclined}
+User Declined Reason: ${data.userDeclinedReason}
+User Attempted SSPR but Failed? ${data.userAttemptedSsprFailed}
+User SSPR Failure Details: ${data.ssprFailureDetails}
+
 ISSUE DESCRIPTION:
 ${data.issueDescription}
 
@@ -139,6 +152,7 @@ Next Action(s): ${data.nextActions}
 
 Issue Resolved? ${data.issueResolved}
 User agreed to set data to Resolved? ${data.userAgreedResolved}
+Resolution Notes: ${data.resolutionNotes}
 
 Ticket #: ${data.ticketNumber}`;
 
@@ -211,29 +225,13 @@ function initTicketForm() {
 	const ticketForm = document.querySelector("#ticketForm");
 
 	ticketForm.addEventListener("input", () => {
-		localState.fieldModified = true;
+		localState.setFieldModified(true);
 	});
 
 	ticketForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		const formData = new FormData(event.target);
 		const data = Object.fromEntries(formData.entries());
-
-		const checkList = [
-			"workSetup",
-			"criticalIssue",
-			"existingTicket",
-			"sspr",
-			"nexthink",
-			"nonAdPasswordReset",
-			"ticketStatus",
-			"issueResolved",
-			"userAgreedResolved",
-		];
-
-		checkList.forEach((item) => {
-			!Object.hasOwn(data, item) && (data[item] = "No");
-		});
 
 		localState.saveRecord(data);
 		console.log(data);
@@ -311,6 +309,7 @@ function init() {
 	initControlPanel();
 	initCreateNewSessionForm();
 	initTicketForm();
+	initSwitchClick();
 }
 
 function exportSession(sessionName) {
@@ -337,9 +336,20 @@ Critical Issue? ${ticket.criticalIssue}
 Existing Ticket? ${ticket.existingTicket}
 Existing Ticket Number: ${ticket.existingTicketNumber}
 
+New Hire: ${ticket.newHire}
+MFA Registered? ${ticket.mfaRegistered}
+SSPR Offered? ${ticket.ssprOffered}
+
+User Declined SSPR? ${ticket.userDeclined}
+User Declined Reason: ${ticket.userDeclinedReason}
+User Attempted SSPR but Failed? ${ticket.userAttemptedSsprFailed}
+User SSPR Failure Details: ${ticket.ssprFailureDetails}
+
 SSPR? ${ticket.sspr}
 Nexthink? ${ticket.nexthink}
 Non-AD Password Reset via Chat? ${ticket.nonAdPasswordReset}
+
+
 
 ISSUE DESCRIPTION:
 ${ticket.issueDescription}
@@ -353,6 +363,7 @@ Next Action(s): ${ticket.nextActions}
 Issue Resolved? ${ticket.issueResolved}
 User agreed to set ticket to Resolved?
 ${ticket.userAgreedResolved}
+Resolution Notes: ${ticket.resolutionNotes}
 
 Ticket #: ${ticket.ticketNumber}
 
@@ -373,6 +384,75 @@ Ticket #: ${ticket.ticketNumber}
 	a.click();
 
 	URL.revokeObjectURL(url);
+}
+
+function initSwitchClick() {
+	const defaultOptionOne = ["N/A", "Yes", "No"];
+	const defaultOptionTwo = ["No", "Yes", "N/A"];
+	const defaultOptionThree = ["No", "Yes"];
+	const workSetupOptions = ["WFH", "Office", "Field"];
+
+	switchClick(document.querySelector("[name=workSetup]"), workSetupOptions);
+
+	switchClick(
+		document.querySelector("[name=criticalIssue]"),
+		defaultOptionThree,
+	);
+	switchClick(
+		document.querySelector("[name=existingTicket]"),
+		defaultOptionThree,
+	);
+	switchClick(document.querySelector("[name=sspr]"), defaultOptionThree);
+	switchClick(document.querySelector("[name=nexthink]"), defaultOptionThree);
+	switchClick(
+		document.querySelector("[name=nonAdPasswordReset]"),
+		defaultOptionOne,
+	);
+	switchClick(document.querySelector("[name=newHire]"), defaultOptionTwo);
+	switchClick(document.querySelector("[name=mfaRegistered]"), defaultOptionOne);
+	switchClick(document.querySelector("[name=ssprOffered]"), defaultOptionOne);
+
+	switchClick(document.querySelector("[name=userDeclined]"), defaultOptionOne);
+	switchClick(
+		document.querySelector("[name=userAttemptedSsprFailed]"),
+		defaultOptionOne,
+	);
+	switchClick(document.querySelector("[name=nextActions]"), [
+		"N/A",
+		"Waiting for Line-Manager Approval",
+		"Route the ticket to the next resolver team",
+	]);
+
+	switchClick(document.querySelector("[name=issueResolved]"), defaultOptionOne);
+
+	switchClick(
+		document.querySelector("[name=userAgreedResolved]"),
+		defaultOptionOne,
+	);
+}
+
+function switchClick(element, options) {
+	let currentOptionIndex = 0;
+
+	element.value = options[currentOptionIndex];
+	element.style.display = "none";
+
+	const parent = element.parentElement;
+
+	const button = document.createElement("button");
+
+	button.textContent = options[currentOptionIndex];
+	button.type = "button";
+	button.classList.add("switch-click");
+	button.addEventListener("click", () => {
+		currentOptionIndex++;
+		if (currentOptionIndex === options.length) {
+			currentOptionIndex = 0;
+		}
+		element.value = options[currentOptionIndex];
+		button.textContent = options[currentOptionIndex];
+	});
+	parent.appendChild(button);
 }
 
 init();
