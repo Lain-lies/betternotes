@@ -1,53 +1,98 @@
 const localState = {
 	record: [],
-	currentlyEditingRecordIndex: null,
-	currentSession: "",
-	currentSessionNodeElement: document.querySelector("#currentSessionName"),
-	ticketModified: false,
+	fieldData: {},
+	fieldSaved: false,
+	fieldModified: false,
+	currentSessionName: "",
+	currentSessionNameElement: document.querySelector("#currentSessionName"),
 
 	initLocalState: function () {
-		this.currentlyEditingRecordIndex = this.record.length;
+		this.fieldData = [];
 	},
 
-	saveRecord: function (newTicket) {
-		if (this.currentlyEditingRecordIndex === this.record.length) {
-			this.record.push(newTicket);
+	setFieldData: function (fieldData) {
+		this.fieldData = fieldData;
+	},
+
+	setFieldSaved: function (value) {
+		this.fieldSaved = value;
+	},
+
+	setFieldModified: function (value) {
+		this.fieldModified = value;
+	},
+
+	setRecord: function (record) {
+		this.record = record;
+	},
+
+	setCurrentSessionName: function (sessionName) {
+		this.currentSessionName = sessionName;
+	},
+
+	getRecord: function () {
+		return this.record;
+	},
+
+	getFieldData: function () {
+		return this.fieldData;
+	},
+
+	getFieldSaved: function () {
+		return this.fieldSaved;
+	},
+
+	getFieldModified: function () {
+		return this.fieldModified;
+	},
+
+	getCurrentSessionName: function () {
+		return this.currentSessionName;
+	},
+
+	saveRecord: function (fieldData) {
+		if (this.getFieldModified() === false) {
+			alert("No changes detected! Please modify the form before saving.");
 			return;
 		}
 
-		this.record[this.currentlyEditingRecordIndex] = newTicket;
-		copyToClipboard(noteTransform(newTicket));
+		if (this.getFieldSaved() === false) {
+			this.setFieldData(fieldData);
+			this.setFieldSaved(true);
+			return;
+		}
+
+		this.setFieldData(fieldData);
+		copyToClipboard(noteTransform(fieldData));
 		alert("Record Saved!");
 	},
 
-	updateCurrentSession: function (sessionName) {
-		this.currentSession = sessionName;
-		this.currentSessionNodeElement.textContent = sessionName;
-		this.record = JSON.parse(localStorage.getItem(sessionName));
-		this.currentlyEditingRecordIndex = this.record.length;
+	loadSession: function (sessionName) {
+		this.setRecord(JSON.parse(localStorage.getItem(sessionName)));
+		this.setFieldSaved(false);
+		this.setFieldModified(false);
+		this.setCurrentSessionName(sessionName);
+		this.currentSessionNameElement.textContent = sessionName;
 
-		console.log(this.currentSession);
+		console.log(this.getCurrentSessionName());
 	},
 
 	syncWithLocalStorage: function () {
 		// if new note is triggered but the current record is not yet saved, prevent
 
-		console.log(
-			this.currentlyEditingRecordIndex,
-			this.record.length,
-			this.ticketModified,
-		);
-		if (
-			this.currentlyEditingRecordIndex === this.record.length &&
-			this.ticketModified
-		) {
+		if (this.getFieldSaved() === false && this.getFieldModified() === true) {
 			alert("Please save current record Or cancel it first.");
 			return false;
 		}
 
-		localStorage.setItem(this.currentSession, JSON.stringify(this.record));
-		this.currentlyEditingRecordIndex = this.record.length;
-		this.ticketModified = false;
+		this.setRecord([...this.getRecord(), this.getFieldData()]);
+		this.setFieldData({});
+		this.setFieldSaved(false);
+		this.setFieldModified(false);
+		localStorage.setItem(
+			this.currentSessionName,
+			JSON.stringify(this.getRecord()),
+		);
 
 		alert("Local Storage Synced!");
 
@@ -104,10 +149,7 @@ function loadSession(sessionName) {
 	const sessionData = JSON.parse(localStorage.getItem(sessionName));
 
 	if (Array.isArray(sessionData)) {
-		localState.record = sessionData;
-		localState.currentlyEditingRecordIndex = localState.record.length;
-		localState.currentSession = sessionName;
-		localState.currentSessionNodeElement.textContent = sessionName;
+		localState.loadSession(sessionName);
 	} else {
 		alert("Session not found! Please create a new session.");
 	}
@@ -124,13 +166,14 @@ function drawSessionList(sessionList) {
 		button.textContent = session;
 		button.addEventListener("click", () => {
 			localState.syncWithLocalStorage();
-			localState.updateCurrentSession(session);
+			localState.loadSession(session);
 		});
 		li.appendChild(button);
 		sessionListNodeElement.appendChild(li);
 	});
 
-	localState.currentSessionNodeElement.textContent = localState.currentSession;
+	localState.currentSessionNameElement.textContent =
+		localState.currentSessionName;
 
 	//temporary code for downloading the session records
 	const sessionExportListNodeElement = document.querySelector(
@@ -168,7 +211,7 @@ function initTicketForm() {
 	const ticketForm = document.querySelector("#ticketForm");
 
 	ticketForm.addEventListener("input", () => {
-		localState.ticketModified = true;
+		localState.fieldModified = true;
 	});
 
 	ticketForm.addEventListener("submit", (event) => {
@@ -204,7 +247,7 @@ function initTicketForm() {
 			)
 		) {
 			ticketForm.reset();
-			localState.ticketModified = false;
+			localState.setFieldSaved(false);
 		}
 	});
 
