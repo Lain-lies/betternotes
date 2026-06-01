@@ -306,6 +306,7 @@ function init() {
 	initCreateNewSessionForm();
 	initTicketForm();
 	initSwitchClick();
+	initAutoFillMinimumDataSet();
 }
 
 function exportSession(sessionName) {
@@ -451,4 +452,54 @@ function switchClick(element, options) {
 	parent.appendChild(button);
 }
 
+function initAutoFillMinimumDataSet() {
+	const element = document.querySelector("[name=minimumDataSet]");
+	const parent = element.parentElement;
+
+	const buttonOne = document.createElement("button");
+	buttonOne.textContent = "PW Reset VERIFIED";
+	const buttonTwo = document.createElement("button");
+	buttonTwo.textContent = "PW Reset NOT VERIFIED";
+
+	buttonOne.type = "button";
+	buttonTwo.type = "button";
+
+	buttonOne.addEventListener("click", () => {
+		const resetType = element.value;
+		element.value = `
+- Checked Users account via ${resetType}
+- User account is active
+- Verified the user via verification tool
+- User is verified
+- Successfully reset user's password 
+- Provided the password to the user
+- User tried the password on his/her end
+- User successfully signed in
+- Provided ticket number to user
+- User acknowledged
+- End call 
+
+
+		`;
+	});
+	buttonTwo.addEventListener("click", () => {
+		const resetType = element.value;
+		element.value = `
+- Checked Users account via  ${resetType}
+- User account is active
+- Verified the user via verification tool
+- User is verified
+- Successfully reset user's password 
+- Provided the password to the user
+- User tried the password on his/her end
+- User successfully signed in
+- Provided ticket number to user
+- User acknowledged
+- End call 
+
+		`;
+	});
+	parent.appendChild(buttonOne);
+	parent.appendChild(buttonTwo);
+}
 init();
