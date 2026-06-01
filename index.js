@@ -6,10 +6,6 @@ const localState = {
 	currentSessionName: "",
 	currentSessionNameElement: document.querySelector("#currentSessionName"),
 
-	initLocalState: function () {
-		this.fieldData = [];
-	},
-
 	setFieldData: function (fieldData) {
 		this.fieldData = fieldData;
 	},
