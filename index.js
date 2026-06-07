@@ -241,7 +241,9 @@ function initTicketForm() {
 			)
 		) {
 			ticketForm.reset();
+			resetSwitchClick();
 			localState.setFieldSaved(false);
+			window.location.href = "#ticketForm";
 		}
 	});
 
@@ -249,6 +251,8 @@ function initTicketForm() {
 	newNoteButton.addEventListener("click", () => {
 		if (localState.syncWithLocalStorage()) {
 			ticketForm.reset();
+			resetSwitchClick();
+			window.location.href = "#ticketForm"; // quick way to scroll to top of the page
 		}
 	});
 }
@@ -441,6 +445,7 @@ function switchClick(element, options) {
 	button.textContent = options[currentOptionIndex];
 	button.type = "button";
 	button.classList.add("switch-click");
+
 	button.addEventListener("click", () => {
 		currentOptionIndex++;
 		if (currentOptionIndex === options.length) {
@@ -449,6 +454,7 @@ function switchClick(element, options) {
 		element.value = options[currentOptionIndex];
 		button.textContent = options[currentOptionIndex];
 	});
+
 	parent.appendChild(button);
 }
 
@@ -486,20 +492,51 @@ function initAutoFillMinimumDataSet() {
 		const resetType = element.value;
 		element.value = `
 - Checked Users account via  ${resetType}
-- User account is active
 - Verified the user via verification tool
-- User is verified
-- Successfully reset user's password 
-- Provided the password to the user
-- User tried the password on his/her end
-- User successfully signed in
-- Provided ticket number to user
-- User acknowledged
-- End call 
+- User is not verified
+- Filed a password reset request for user 
+- Advised user that the request is subject to line-manager's approval
+- Provided Ticket Number
+- User Acknowledged
+- End call
 
 		`;
 	});
 	parent.appendChild(buttonOne);
 	parent.appendChild(buttonTwo);
 }
+
+function resetSwitchClick() {
+	const switchClickButtons = document.querySelectorAll(".switch-click");
+
+	switchClickButtons.forEach((button) => {
+		button.remove();
+	});
+
+	initSwitchClick();
+}
+
+function fillTestData() {
+	document.querySelector("[name=employeeId]").value = "12345678";
+	document.querySelector("[name=fullName]").value = "Kenjie Tarasona";
+	document.querySelector("[name=userId]").value = "KDCRUZ";
+	document.querySelector("[name=email]").value =
+		"kenjie.tarasona@nationalgrid.com";
+	document.querySelector("[name=contactNumber]").value = "09171234567";
+	document.querySelector("[name=location]").value = "Marikina";
+
+	document.querySelector("[name=issueDescription]").value =
+		"User unable to sign in after password expiration.";
+
+	document.querySelector("[name=minimumDataSet]").value =
+		`Verified employee identity.
+Validated employee ID.
+Performed password reset via SSPR.
+Confirmed successful login.`;
+
+	document.querySelector("[name=kbArticle]").value = "KB123456";
+	document.querySelector("[name=ticketNumber]").value = "INC1234567";
+}
+
 init();
+document.querySelector("#fillTestData").addEventListener("click", fillTestData);
