@@ -80,6 +80,11 @@
 				font-size: 1rem;
 				padding: 0.5rem 1rem;
 			}
+
+			#session-individual-record > button {
+				font-size: 1rem;
+				padding: 0.75rem 0.5rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -91,7 +96,7 @@
 					alt="BetterNotes Logo" />
 			</div>
 		</header>
-		<p>ver. 1.2.2(early access)</p>
+		<p>ver. 1.3.0</p>
 
 		<div class="control-panel">
 			<h3><b>Sessions:</b></h3>
@@ -119,6 +124,10 @@
 
 			<h3>Session Records: Export</h3>
 			<ul class="session-export-list"></ul>
+			<hr />
+			<hr />
+			<h3>Session Records: Individual Export</h3>
+			<div id="session-individual-record"></div>
 		</div>
 
 		<button id="hide-control-panel">HIDE CONTROL PANEL</button>

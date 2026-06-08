@@ -184,22 +184,45 @@ function drawSessionList(sessionList) {
 
 	localState.currentSessionNameElement.textContent =
 		localState.currentSessionName;
+}
 
-	//temporary code for downloading the session records
+function drawExportSessionList(sessionList) {
 	const sessionExportListNodeElement = document.querySelector(
 		".session-export-list",
 	);
 	sessionExportListNodeElement.replaceChildren();
-
 	sessionList.forEach((session) => {
 		const li = document.createElement("li");
 		const button = document.createElement("button");
 		button.textContent = session;
 		button.addEventListener("click", () => {
-			exportSession(session);
+			getSessionIndividualRecord(session);
 		});
 		li.appendChild(button);
 		sessionExportListNodeElement.appendChild(li);
+	});
+}
+
+function getSessionIndividualRecord(sessionName) {
+	const sessionIndividualRecordElement = document.querySelector(
+		"#session-individual-record",
+	);
+	sessionIndividualRecordElement.replaceChildren();
+	const sessionData = JSON.parse(localStorage.getItem(sessionName));
+
+	const exportAllButton = document.createElement("button");
+	exportAllButton.textContent = "Export ALL";
+	exportAllButton.addEventListener("click", () => exportSession(sessionName));
+	sessionIndividualRecordElement.appendChild(exportAllButton);
+
+	sessionIndividualRecordElement.appendChild;
+	sessionData.forEach((record) => {
+		const button = document.createElement("button");
+		button.textContent = `${record.ticketNumber} | ${record.fullName}`;
+		button.addEventListener("click", () => {
+			exportIndividualRecord(record);
+		});
+		sessionIndividualRecordElement.appendChild(button);
 	});
 }
 
@@ -252,6 +275,7 @@ function initTicketForm() {
 		if (localState.syncWithLocalStorage()) {
 			ticketForm.reset();
 			resetSwitchClick();
+			getSessionIndividualRecord(localState.getCurrentSessionName());
 			window.location.href = "#ticketForm"; // quick way to scroll to top of the page
 		}
 	});
@@ -270,6 +294,7 @@ function initSession() {
 
 	loadSession(sessionList[0]);
 	drawSessionList(sessionList);
+	drawExportSessionList(sessionList);
 
 	console.log(sessionList);
 }
@@ -381,6 +406,74 @@ Ticket #: ${ticket.ticketNumber}
 	const a = document.createElement("a");
 	a.href = url;
 	a.download = `${sessionName}.txt`;
+
+	a.click();
+
+	URL.revokeObjectURL(url);
+}
+
+function exportIndividualRecord(ticket) {
+	const textContent = `
+========================================
+Individual Record
+========================================
+
+Employee ID: ${ticket.employeeId}
+Name: ${ticket.fullName}
+User ID: ${ticket.userId}
+Email Address: ${ticket.email}
+Contact Number: ${ticket.contactNumber}
+Best time to reach: ${ticket.bestTimeToReach}
+Work Setup: ${ticket.workSetup}
+Location: ${ticket.location}
+
+Critical Issue? ${ticket.criticalIssue}
+Existing Ticket? ${ticket.existingTicket}
+Existing Ticket Number: ${ticket.existingTicketNumber}
+
+New Hire: ${ticket.newHire}
+MFA Registered? ${ticket.mfaRegistered}
+SSPR Offered? ${ticket.ssprOffered}
+
+User Declined SSPR? ${ticket.userDeclined}
+User Declined Reason: ${ticket.userDeclinedReason}
+User Attempted SSPR but Failed? ${ticket.userAttemptedSsprFailed}
+User SSPR Failure Details: ${ticket.ssprFailureDetails}
+
+SSPR? ${ticket.sspr}
+Nexthink? ${ticket.nexthink}
+Non-AD Password Reset via Chat? ${ticket.nonAdPasswordReset}
+
+
+
+ISSUE DESCRIPTION:
+${ticket.issueDescription}
+
+MINIMUM DATA SET:
+${ticket.minimumDataSet}
+
+KB Article: ${ticket.kbArticle}
+Next Action(s): ${ticket.nextActions}
+
+Issue Resolved? ${ticket.issueResolved}
+User agreed to set ticket to Resolved?
+${ticket.userAgreedResolved}
+Resolution Notes: ${ticket.resolutionNotes}
+
+Ticket #: ${ticket.ticketNumber}
+
+
+`;
+
+	const blob = new Blob([textContent], {
+		type: "text/plain",
+	});
+
+	const url = URL.createObjectURL(blob);
+
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `${ticket.ticketNumber}.txt`;
 
 	a.click();
 
