@@ -96,44 +96,47 @@
 					alt="BetterNotes Logo" />
 			</div>
 		</header>
-		<p>ver. 1.3.0</p>
+		<p>ver. 1.4.0</p>
+
+		<form id="createSessionForm">
+			<label for="sessionName">
+				Create New Session :
+				<input
+					type="text"
+					id="sessionName"
+					name="sessionName"
+					placeholder="Enter session name"
+					required />
+			</label>
+
+			<button type="submit">Create Session</button>
+		</form>
 
 		<div class="control-panel">
-			<h3><b>Sessions:</b></h3>
-			<ul class="session-list"></ul>
-
 			<h3>Current Session:</h3>
 			<p id="currentSessionName"></p>
 
-			<h4>Records in this session:</h4>
-			<span id="recordCount"></span>
-
-			<form id="createSessionForm">
-				<label for="sessionName">
-					Create New Session :
-					<input
-						type="text"
-						id="sessionName"
-						name="sessionName"
-						placeholder="Enter session name"
-						required />
-				</label>
-
-				<button type="submit">Create Session</button>
-			</form>
+			<h3><b>Sessions:</b></h3>
+			<ul id="session-list"></ul>
 
 			<h3>Session Records: Export</h3>
-			<ul class="session-export-list"></ul>
+			<ul id="exportable-list"></ul>
+
 			<hr />
 			<hr />
-			<h3>Session Records: Individual Export</h3>
-			<div id="session-individual-record"></div>
+
+			<h3>History</h3>
+			<div id="session-history"></div>
 		</div>
 
 		<button id="hide-control-panel">HIDE CONTROL PANEL</button>
-		<h3>New Note:</h3>
 
+		<hr />
+		<h3>New Note:</h3>
 		<form id="ticketForm">
+			<button type="button" id="calltype">Itself</button>
+
+			<h3>Caller</h3>
 			<label>
 				Employee ID:
 				<input
@@ -181,7 +184,7 @@
 					type="text"
 					name="bestTimeToReach"
 					placeholder="Enter Best Time to Reach"
-					value="8am-5pm"
+					value="9am-4pm"
 					required />
 			</label>
 
@@ -199,11 +202,85 @@
 					required />
 			</label>
 			<hr />
+			<div id="onbehalf">
+				<h3>User</h3>
+
+				<label>
+					Employee ID:
+					<input
+						type="text"
+						name="OBemployeeId"
+						placeholder="Enter Employee ID"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					First and Last Name:
+					<input
+						type="text"
+						name="OBfullName"
+						placeholder="Enter Full Name"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					User ID:
+					<input
+						type="text"
+						name="OBuserId"
+						placeholder="Enter User ID"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					Email Address:
+					<input
+						type="text"
+						name="OBemail"
+						placeholder="Enter Email Address"
+						value="N/A" />
+				</label>
+
+				<label>
+					Contact Number:
+					<input
+						type="text"
+						name="OBcontactNumber"
+						placeholder="Enter Contact Number"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					Best Time to Reach:
+					<input
+						type="text"
+						name="OBbestTimeToReach"
+						placeholder="Enter Best Time to Reach"
+						value="8am-5pm"
+						value="N/A"
+						required />
+				</label>
+
+				<label>
+					WFH?:
+					<input type="input" name="OBworkSetup" value="WFH" />
+				</label>
+
+				<label>
+					Location:
+					<input
+						type="text"
+						name="OBlocation"
+						placeholder="Enter Location"
+						value="N/A"
+						required />
+				</label>
+			</div>
 			<hr />
-			<label>
-				Critical Issue?
-				<input type="input" name="criticalIssue" />
-			</label>
 
 			<label>
 				Existing Ticket?
@@ -221,20 +298,6 @@
 					required />
 			</label>
 
-			<label>
-				SSPR?
-				<input type="input" name="sspr" />
-			</label>
-
-			<label>
-				Nexthink?
-				<input type="input" name="nexthink" />
-			</label>
-
-			<label>
-				Non-AD Password Reset via Chat?
-				<input type="input" name="nonAdPasswordReset" />
-			</label>
 			<hr />
 			<hr />
 			<label>
@@ -258,7 +321,7 @@
 			</label>
 
 			<label>
-				User declined:
+				Decline Details:
 				<textarea name="userDeclinedReason">N/A</textarea>
 			</label>
 
@@ -299,6 +362,16 @@
 					type="text"
 					name="kbArticle"
 					placeholder="Enter KB Article"
+					required />
+			</label>
+
+			<label>
+				Nexthink Snapshot:
+				<input
+					type="text"
+					name="nexthink"
+					placeholder="nexthink snapshot"
+					value="N/A"
 					required />
 			</label>
 
