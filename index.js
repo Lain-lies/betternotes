@@ -260,11 +260,13 @@ const fieldState = {
 			"Waiting for Line-Manager Approval",
 			"Route the ticket to the next resolver team",
 			"Set ticket to pending",
+			"Set ticket to resolve",
+			"Cancel ticket",
 		]);
 
 		this.setupSwitchClick(
 			document.querySelector("[name=issueResolved]"),
-			defaultOptionOne,
+			defaultOptionTwo,
 		);
 
 		this.setupSwitchClick(
@@ -384,6 +386,76 @@ const fieldState = {
 		parent.appendChild(buttonFour);
 	},
 
+	initTextAreaAutoFormat: function () {
+		const minimumDataSetElement = document.querySelector(
+			"[name=minimumDataSet]",
+		);
+
+		minimumDataSetElement.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				e.target.value += `
+- `;
+			}
+		});
+
+		minimumDataSetElement.addEventListener("click", (e) => {
+			e.target.value += "- ";
+		});
+
+		const issueDescriptionElement = document.querySelector(
+			"[name=issueDescription]",
+		);
+
+		issueDescriptionElement.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				e.target.value += `
+- `;
+			}
+		});
+
+		issueDescriptionElement.addEventListener("click", (e) => {
+			e.target.value += "- ";
+		});
+	},
+
+	initKBShortcut: function () {
+		const kbaElement = document.querySelector("[name=kbArticle]");
+
+		const shortcuts = {
+			ad: "KB0034635",
+			css: "KB0036245",
+			ds: "KB0036249",
+			ldap: "KB0034367",
+			cwq: "KB0034367",
+			arcos: "KB0011194",
+			max: "KB0050099",
+			power: "KB0010724",
+			sap: "KB0028648",
+			win11: "KB0042494",
+			laptop: "KB0041117",
+			mobile: "KB0041555",
+			avd: "KB0042642",
+			o365: "KB0034763",
+			outlook: "KB0035272",
+			intune: "KB0035752",
+			mfa: "KB0040875",
+			myhub: "KB0040883",
+			teams: "KB0041367",
+			adsup: "KB0035746",
+		};
+
+		kbaElement.addEventListener("keydown", (e) => {
+			if (e.key === "Enter") {
+				e.preventDefault();
+				const value = shortcuts[e.target.value];
+				if (value === null || value === undefined) return;
+				e.target.value = value;
+			}
+		});
+	},
+
 	// INIT //
 
 	init: function () {
@@ -431,6 +503,8 @@ const fieldState = {
 
 		this.initSwitchClick();
 		this.initAutoFillMinimumDataSet();
+		this.initTextAreaAutoFormat();
+		this.initKBShortcut();
 	},
 };
 
@@ -823,9 +897,9 @@ function initCreateNewSessionForm() {
 }
 
 function init() {
-	// window.addEventListener("beforeunload", (e) => {
-	// 	e.preventDefault();
-	// });
+	window.addEventListener("beforeunload", (e) => {
+		e.preventDefault();
+	});
 
 	const isFreshStart = !storageState.resumeLastSession();
 	console.log(`isFreshStart: ${isFreshStart}`);
