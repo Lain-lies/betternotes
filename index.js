@@ -1,5 +1,5 @@
 const storageState = {
-	record: [],
+	record: null,
 	currentSessionName: "",
 	sessionList: [],
 
@@ -13,7 +13,6 @@ const storageState = {
 
 	setSessionList: function (sessionList) {
 		this.sessionList = [...sessionList];
-		console.log(this.sessionList);
 	},
 
 	getRecord: function () {
@@ -29,36 +28,46 @@ const storageState = {
 	},
 
 	getSessionListFromLocalStorage: function () {
-		const sessionList = Object.entries(localStorage).map(([key]) => key);
+		const sessionList = Object.entries(localStorage)
+			.map(([key]) => key)
+			.filter((key) => key !== "lastSessionName");
 		console.log(sessionList);
-		if (sessionList.length === 0) {
-			const now = Date.now();
-			const dateObject = new Date(now);
-			const currentDate = dateObject.toLocaleDateString();
-			localStorage.setItem(currentDate, JSON.stringify([]));
-			this.setSessionList([currentDate]);
-			return;
-		}
 
-		this.setSessionList(sessionList);
+		return sessionList;
 	},
 
 	// HELPERS //
+	resumeLastSession: function () {
+		const lastSessionName = localStorage.getItem("lastSessionName");
+
+		if (lastSessionName === null || lastSessionName === undefined) {
+			console.log("No last session");
+			return false;
+		}
+
+		const sessionList = this.getSessionListFromLocalStorage(lastSessionName);
+		this.setSessionList(sessionList);
+		this.loadSession(lastSessionName);
+		return true;
+	},
+
 	loadSession: function (sessionName) {
-		const sessionData = JSON.parse(
-			localStorage.getItem(this.getCurrentSessionName(sessionName)),
-		);
+		const sessionData = JSON.parse(localStorage.getItem(sessionName));
 
 		if (!Array.isArray(sessionData)) {
-			alert("Session not found! Please create a new session.");
+			alert(
+				"Error encountered: The session loaded is not Array and will cause saving errors",
+			);
 			return;
 		}
 
 		this.setRecord(sessionData);
 		this.setCurrentSessionName(sessionName);
 
-		console.log(`Session Name: ${this.getCurrentSessionName()}`);
-		console.log(`Session Data: ${this.getRecord()}`);
+		console.log(`
+Current Session: ${this.getCurrentSessionName()}
+Current Record: ${this.getRecord()}
+Session List: ${this.getSessionList()}`);
 	},
 
 	syncWithLocalStorage: function (newRecord) {
@@ -74,15 +83,26 @@ const storageState = {
 		return true;
 	},
 
+	updateSessionList: function () {
+		const newSessionList = this.getSessionListFromLocalStorage();
+		this.setSessionList(newSessionList);
+	},
+
+	saveLastSession: function () {
+		console.log(`savelastsession: ${this.getCurrentSessionName()} `);
+		localStorage.setItem("lastSessionName", this.getCurrentSessionName());
+	},
+
 	// INIT //
 
 	init: function () {
-		this.getSessionListFromLocalStorage();
-
-		const currentSessionName = this.getSessionList();
-		console.log(this.sessionList);
-		console.log(currentSessionName[0]);
-		this.setCurrentSessionName(currentSessionName[0]);
+		const now = Date.now();
+		const dateObject = new Date(now);
+		const currentDate = dateObject.toLocaleDateString();
+		localStorage.setItem(currentDate, JSON.stringify([]));
+		this.setSessionList([currentDate]);
+		this.loadSession(currentDate);
+		this.saveLastSession();
 	},
 };
 
@@ -439,8 +459,10 @@ const controlPanelDisplayState = {
 			button.addEventListener("click", () => {
 				if (fieldState.isAllowedtoSwitchSession()) {
 					storageState.loadSession(session);
+					storageState.saveLastSession();
 					this.renderCurrentSessionName(storageState.getCurrentSessionName());
 					this.renderAllControlPanelList();
+
 					return;
 				}
 				alert(
@@ -489,6 +511,7 @@ const controlPanelDisplayState = {
 	},
 
 	renderAllControlPanelList: function () {
+		console.log("render all called");
 		this.renderSessionList();
 		this.renderExportSessionList();
 	},
@@ -794,17 +817,20 @@ function initCreateNewSessionForm() {
 		}
 
 		localStorage.setItem(newSessionName, JSON.stringify([]));
-		storageState.getSessionListFromLocalStorage();
+		storageState.updateSessionList();
 		controlPanelDisplayState.renderAllControlPanelList();
 	});
 }
 
 function init() {
-	window.addEventListener("beforeunload", (e) => {
-		e.preventDefault();
-	});
+	// window.addEventListener("beforeunload", (e) => {
+	// 	e.preventDefault();
+	// });
 
-	storageState.init();
+	const isFreshStart = !storageState.resumeLastSession();
+	console.log(`isFreshStart: ${isFreshStart}`);
+	if (isFreshStart) storageState.init();
+
 	fieldState.init();
 	controlPanelDisplayState.init();
 	initCreateNewSessionForm();
